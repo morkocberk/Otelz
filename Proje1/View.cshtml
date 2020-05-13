@@ -1,0 +1,229 @@
+
+@{
+    ViewBag.Title = "Raporlarým";
+    Layout = "~/Views/_Shared/_EksperLayout.cshtml";
+}
+
+@model List<Ekspertiz.Models.Raporlar>
+
+
+
+@section js{  
+
+    <script>
+        $('#default_order').DataTable({            
+            responsive: true,            
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            var id;
+            var plaka;
+            var element;
+            $(".iste").click(function () {                
+                id = $(this).data("id");
+                plaka = $(this).data("p");
+                element = $(this).parent();
+                document.getElementById("reason").placeholder = "Lütfen " + plaka + " plakalý araca ait raporu düzenleme sebebini belirtiniz.";
+                $('#myModal2').modal('show');
+            });
+            $("#send").click(function () {                
+                var reason = $("#reason").val();                
+                $.ajax({
+                    type: "POST",
+                    url: "/zz/xx",
+                    dataType: "json",
+                    data: { RaporId: id, Plaka: plaka, Sebep: reason },
+                    success: function a(veri) {
+                        if (veri.id != "") {
+                            element.html('');
+                            element.html(veri.id);
+                        }                        
+                        $("#ModalText").html('');
+                        $("#ModalText").html(veri.Text);
+                        $('#myModal').modal('show');
+                    },
+                    error: function b() {
+                        alert("Bir hatayla karþýlaþýldý!");
+                    }
+                });
+            });
+
+        });
+    </script>   
+    
+    }
+
+<header id="gtco-header" class="gtco-cover gtco-cover-xs" role="banner" style="background-image:url(/Eksper/images/a.jpg);">
+    <div class="overlay"></div>
+    <div class="gtco-container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center">
+                <div class="display-t">
+                    <div class="display-tc">
+                        <h1 class="animate-box" data-animate-effect="fadeInUp">Raporlarým</h1>
+                        <h2 class="animate-box" data-animate-effect="fadeInUp">Oluþturduðunuz tüm raporlara bu sayfa üzerinden ulaþabilirsiniz.</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<div id="gtco-history" class="gtco-section border-bottom animate-box">
+    
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center gtco-heading">
+                <h2>Raporlarým</h2>                
+                @*<p>Dignissimos asperiores vitae velit veniam totam fuga molestias accusamus alias autem provident. Odit ab aliquam dolor eius.</p>*@
+            </div>
+        </div>
+        <div class="row row-pb-md">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="table-responsive">
+                    <table id="default_order" class="table table-striped table-bordered display no-wrap"
+                           style="width:100%;color:#333333;">
+                        <thead>
+                            <tr>
+                                <th>Araç Þasi No</th>
+                                <th>Araç Plaka No</th>
+                                <th>Araç Marka</th>
+                                <th>Araç Model</th>
+                                <th>Araç Yýlý</th>
+                                <th>Yakýt Tipi</th>
+                                <th>Araç Kilometresi</th>
+                                <th>Vites Tipi</th>
+                                <th>Oluþturulma Tarihi</th>
+                                <th>Ýþlemler</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderByDescending(x=>x.OlusturulmaTarihi))
+                            {
+                                <tr>
+                                    <td>@item.SasiNo</td>
+                                    <td>@item.PlakaNo</td>
+                                    <td>@item.Marka</td>
+                                    <td>@item.Model</td>
+                                    <td>@item.Yili</td>
+                                    <td>@item.YakitTipi</td>
+                                    <td>@item.Km</td>
+                                    <td>@item.VitesTipi</td>
+                                    <td>@item.OlusturulmaTarihi.ToString("dd MMMM yyyy")</td>
+                                    <td>                                        
+                                        <a href="/Rapor/@item.RaporID?P=@item.PlakaNo" style="padding:5px;" target="_blank" class="btn btn-primary btn-circle" title="Detay">
+                                           Detay
+                                        </a> 
+                                        @if (Roles.IsUserInRole("Admin"))
+                                        {
+                                            <a href="/RaporDuzenle/@item.RaporID?P=@item.PlakaNo" style="padding:5px;" target="_blank" class="btn btn-success btn-circle" title="Düzenle">
+                                                Düzenle
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            if (item.RaporDuzenlemeTalep != null)
+                                            {
+                                                if (item.RaporDuzenlemeTalep.OnaylandiMi == true)
+                                                {
+                                                    <a href="/RaporDuzenle/@item.RaporID?P=@item.PlakaNo" style="padding:5px;" target="_blank" class="btn btn-success btn-circle" title="Düzenle">
+                                                        Düzenle
+                                                    </a>
+                                                }
+                                                else if (item.RaporDuzenlemeTalep.RedMi == true)
+                                                {
+                                                    <button style="padding:5px;" class="btn btn-danger btn-circle" title="Ýstek Reddedildi" disabled>
+                                                        Onay Reddedildi
+                                                    </button>
+                                                }
+                                                else if (item.RaporDuzenlemeTalep.OnayBekliyorMu == true)
+                                                {
+                                                    <button style="padding:5px;" class="btn btn-info btn-circle" title="Onay Beklemede" disabled>
+                                                        Onay Bekleniyor
+                                                    </button>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (item.OlusturulmaTarihi.AddHours(1) > DateTime.Now)
+                                                {
+                                                    <a href="/RaporDuzenle/@item.RaporID" style="padding:5px;" target="_blank" class="btn btn-success btn-circle" title="Düzenle">
+                                                        Düzenle
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a href="#" style="padding:5px;" class="btn btn-warning btn-circle iste" title="Düzenleme Onayý Ýste" data-id="@item.RaporID" data-p="@item.PlakaNo">
+                                                        Onay Ýste
+                                                    </a>
+                                                }
+
+                                            }
+                                        }        
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Araç Þasi No</th>
+                                <th>Araç Plaka No</th>
+                                <th>Araç Marka</th>
+                                <th>Araç Model</th>
+                                <th>Araç Yýlý</th>
+                                <th>Yakýt Tipi</th>
+                                <th>Araç Kilometresi</th>
+                                <th>Vites Tipi</th>
+                                <th>Oluþturulma Tarihi</th>
+                                <th>Ýþlemler</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+            </div>
+            <div class="col-md-1"></div>
+        </div>    
+</div>
+
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">         
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#17B794">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="color:white"><b>Düzenleme Ýsteði Talebi</b></h4>
+            </div>
+            <div class="modal-body">                             
+                <p id="ModalText" style="margin-left:2%"><b></b></p>
+            </div>
+            <div class="modal-footer">                
+                <button type="button" class="btn btn-default" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="myModal2" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#17B794">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="color:white"><b>Düzenleme Ýsteði Talebi</b></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <textarea class="form-control" id="reason" style="width:100%" required></textarea>
+                    </div>
+                </div>    
+            </div>
+            <div class="modal-footer">
+                <button id="send" type="button" class="btn btn-success" data-dismiss="modal">Onay Ýste</button>                
+            </div>
+        </div>
+    </div>
+</div>
