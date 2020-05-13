@@ -1,6 +1,6 @@
  <div class="panel panel-default">
           <div class="panel-heading">
-               <h4>Duyurular ve Açıklamalar</h4>
+               <h4>Duyurular ve AÃ§Ã½klamalar</h4>
           </div>
           <div class="panel-body">
               @if (ViewBag.RolEksik != null)
@@ -8,13 +8,13 @@
                   <h4 style="color:red">@ViewBag.RolEksik</h4>
               }
                                 <p>
-                                    Yönetim sistemine hoşgeldiniz.                                    
+                                    YÃ¶netim sistemine hoÃ¾geldiniz.                                    
                                 </p>
                                 <p>
-                                    Duyuru ekleme/düzenleme işlemi esnasında Vize/Final Durumu kutucuğunu işaretlemek aktif olan bütün duyuruların <b>görüntülenmesini engelleyip</b>, sadece Vize/Final Durumu "Evet" olan duyuruların <b>görünmesine</b> sebebiyet verir.
+                                    Duyuru ekleme/dÃ¼zenleme iÃ¾lemi esnasÃ½nda Vize/Final Durumu kutucuÃ°unu iÃ¾aretlemek aktif olan bÃ¼tÃ¼n duyurularÃ½n <b>gÃ¶rÃ¼ntÃ¼lenmesini engelleyip</b>, sadece Vize/Final Durumu "Evet" olan duyurularÃ½n <b>gÃ¶rÃ¼nmesine</b> sebebiyet verir.
                                 </p>
                                 <p>
-                                    Program düzeni sekmesinden ders programlarının gösterilmesini <b>istemediğiniz</b> tarihleri girerek, uygulamada girilen tarihler arasında ders programı gösterimini engelleyebilirsiniz.
+                                    Program dÃ¼zeni sekmesinden ders programlarÃ½nÃ½n gÃ¶sterilmesini <b>istemediÃ°iniz</b> tarihleri girerek, uygulamada girilen tarihler arasÃ½nda ders programÃ½ gÃ¶sterimini engelleyebilirsiniz.
                                 </p>
            </div>         
      </div>
@@ -22,10 +22,10 @@
 {
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h4>Sahip Olduğunuz Roller</h4>
+            <h4>Sahip OlduÃ°unuz Roller</h4>
         </div>
         <div class="panel-body">
-            <p>Lütfen işlem yapmadan önce <b>rol seçiniz</b>. Aksi halde varsayılan rolünüzle işlem yapılacaktır!</p>            
+            <p>LÃ¼tfen iÃ¾lem yapmadan Ã¶nce <b>rol seÃ§iniz</b>. Aksi halde varsayÃ½lan rolÃ¼nÃ¼zle iÃ¾lem yapÃ½lacaktÃ½r!</p>            
             @foreach (string rol in Roles.GetRolesForUser())
             {                
                 <p>Rol &#8594; <a class="rolsecim" data-toggle="modal" data-target="#SifreModalBox" name="@rol">@rol</a></p>
@@ -37,8 +37,8 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close GlobalModalBoxClose" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">Uyarı</h4>
+                <button type="button" class="close GlobalModalBoxClose" data-dismiss="modal" aria-hidden="true">Ã—</button>
+                <h4 class="modal-title">UyarÃ½</h4>
             </div>
             <div class="modal-body">
                 <div class="form-horizontal">
@@ -72,8 +72,8 @@
                 success: function a(veri) {
                     $("#Uyari").html('');
                     $("#Uyari").html("&#10004; " + veri);
-                    if (veri != "Kullanıcı bu role atanmamış!")
-                    $("#roldurum").html("Şuanki rolünüz: " +roladi);
+                    if (veri != "KullanÃ½cÃ½ bu role atanmamÃ½Ã¾!")
+                    $("#roldurum").html("Ãuanki rolÃ¼nÃ¼z: " +roladi);
                 },
                 error: function b() {
                     $("#Uyari").html('');
