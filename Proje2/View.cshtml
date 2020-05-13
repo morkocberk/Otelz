@@ -1,0 +1,78 @@
+@section script{   
+ 
+<script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
+<script src="~/SignalR/Hubs"></script>
+<script>
+        $(function () {
+            var chat = $.connection.chatHub;
+            var $message = $('#txtMessage');
+            var $messages = $('#chat-box');
+            var $chatid = $('#chat-id');
+            $message.focus();
+            chat.client.receiveMessage = function (msgFrom, msg, senderid, time) {
+                if (msgFrom == "BAKANLIKSINAV") {
+                    $messages.append('<div class="item"><img src="/Content/assets/img/logo2.png" alt="user image" class="online"><p class="message"><a href="#" class="name"> <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> ' + time + '</small>' + msgFrom +
+                    '</a>' + msg + '</p></div>');
+                }
+                else {
+                    $messages.append('<div class="item"><img src = "/Content/assets/img/no-avatar.png" alt="user image" class="online"><p class="message"><a href="#" class="name"> <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> ' + time + '</small>' + msgFrom +
+                    '</a>' + msg + '</p></div>');
+                }
+                $messages.scrollTop($messages.prop('scrollHeight'));
+                
+            };
+            $.connection.hub.start().done(function () {
+                try {
+                    chat.server.groupconnect("1", $chatid.val());
+                } catch (e) { alert(e.message); }
+
+                $message.keypress(function (e) {
+                    if (e.which == 13) {                        
+                        $("#btnSendMessage").click();
+                    }
+                });
+
+                $('#btnSendMessage').click(function () {
+                    chat.server.broadCastMessage($message.val(), $chatid.val());
+                    
+                    $message.val('').focus();
+                });
+            });
+        });
+</script>   
+    
+    }
+@model List<BakanlikSinavProje.Models.Sohbet_Icerik>
+<section class="content">
+    <div class="box box-success">
+        <div class="box-header ui-sortable-handle" style="cursor: move;">
+            <i class="fa fa-comments-o"></i>
+
+            <h3 class="box-title">Sohbet</h3>
+        </div>
+        <div class="box-body chat" id="chat-box">
+            @foreach (var item in Model)
+            {
+                <div class="item">
+                    <img src="/Content/assets/img/no-avatar.png" alt="user image" class="online"><p class="message">
+                        <a href="#" class="name">
+                            <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> @String.Format("{0:dd MMMM HH:mm}", item.Tarih)</small>@item.Username
+                        </a> @IcerikKontrol(item.Mesaj)
+                    </p>
+                </div>
+            }                          
+        </div>
+        <!-- /.chat -->
+        <div class="box-footer">
+            <input type="hidden" id="chat-id" value="@ViewBag.id"/>
+            <div class="input-group">
+                <input class="form-control" id="txtMessage" placeholder="Mesajýnýz..." required/>
+
+                <div class="input-group-btn">
+                    <button type="button" id="btnSendMessage" class="btn btn-success"><i class="fa fa-fw fa-send"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>        
+        <!-- /.chat -->
+</section>
